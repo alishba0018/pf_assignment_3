@@ -1,0 +1,54 @@
+#include <stdio.h>
+#include <string.h>
+
+typedef struct Employee {
+    int employeeCode;
+    char employeeName[50];
+    char dateOfJoining[20];
+} emp;
+
+void assign(struct Employee *emp) {
+    printf("Enter the employee code:\n");
+    scanf("%d", &emp->employeeCode);
+    getchar();
+    printf("Enter the employee name:\n");
+    fgets(emp->employeeName, sizeof(emp->employeeName), stdin);
+    emp->employeeName[strcspn(emp->employeeName, "\n")] = '\0';
+    printf("Enter the joining date of employee (YYYY-MM-DD):\n");
+    fgets(emp->dateOfJoining, sizeof(emp->dateOfJoining), stdin);
+    emp->dateOfJoining[strcspn(emp->dateOfJoining, "\n")] = '\0';
+}
+
+void tenure(struct Employee employees[], int numEmployees, int currentYear, int currentMonth, int currentDay) {
+    int count = 0;
+    printf("Employees with more than 3 years of tenure:\n");
+    for (int i = 0; i < numEmployees; i++) {
+        int joinYear, joinMonth, joinDay;
+        sscanf(employees[i].dateOfJoining, "%d-%d-%d", &joinYear, &joinMonth, &joinDay);
+        int yearsWorked = currentYear - joinYear;
+        if (currentMonth < joinMonth || (currentMonth == joinMonth && currentDay < joinDay)) {
+            yearsWorked--;
+        }
+        if (yearsWorked > 3) {
+            count++;
+            printf("\nEmployee Code: %d\n", employees[i].employeeCode);
+            printf("Employee Name: %s\n", employees[i].employeeName);
+            printf("Date of Joining: %s\n", employees[i].dateOfJoining);
+            printf("Tenure: %d years\n", yearsWorked);
+        }
+    }
+    printf("\nTotal number of employees with more than 3 years of tenure: %d\n", count);
+}
+
+int main() {
+    struct Employee employees[4];
+    for (int i = 0; i < 4; i++) {
+        printf("\nEnter details for Employee %d:\n", i + 1);
+        assign(&employees[i]);
+    }
+    int currentYear = 2024;
+    int currentMonth = 11;
+    int currentDay = 27;
+    tenure(employees, 4, currentYear, currentMonth, currentDay);
+    return 0;
+}
