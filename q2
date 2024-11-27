@@ -1,0 +1,95 @@
+#include <stdio.h>
+#include <string.h>
+
+typedef struct Player {
+    int ballScores[12];  // Scores for 12 balls
+    char playerName[50];
+    int totalScore;  // Total score of the player
+    int avgScore;    // Average score of the player
+} Player;
+
+// Function to validate the score
+int validateScore(int score) {
+    if (score < 0 || score > 6) {
+        printf("Invalid score! Score will be disregarded.\n");
+        return -1;  // Indicating invalid score
+    }
+    return score;  // Return the valid score
+}
+
+// Function to play the game and record scores for each ball
+void playGame(Player *p) {
+    int totalScore = 0;  // Initialize total score to 0
+    for (int i = 0; i < 12; i++) {
+        int score;
+        printf("Enter score for ball %d: ", i + 1);
+        scanf("%d", &score);
+        
+        // Validate score and update the ball score array
+        score = validateScore(score);
+        
+        if (score != -1) {  // If valid, add to the total score
+            p->ballScores[i] = score;
+            totalScore += score;
+        } else {
+            p->ballScores[i] = 0;  // Assign 0 to invalid scores
+        }
+    }
+
+    p->totalScore = totalScore;  // Set the total score
+    p->avgScore = totalScore / 12;  // Calculate the average score
+}
+
+// Function to find the winner based on total score
+void findWinner(Player player1, Player player2) {
+    if (player1.totalScore > player2.totalScore) {
+        printf("Winner is Player 1!!\n");
+    } else if (player1.totalScore == player2.totalScore) {
+        printf("Match tied, no winner.\n");
+    } else {
+        printf("Winner is Player 2!!\n");
+    }
+}
+
+// Function to display the match scoreboard
+void displayMatchScoreboard(Player player1, Player player2) {
+    printf("\nPlayer 1's performance:\n");
+    for (int i = 0; i < 12; i++) {
+        printf("Ball %d: %d\n", i + 1, player1.ballScores[i]);
+    }
+    printf("Total score for Player 1: %d\n", player1.totalScore);
+    printf("Average score for Player 1: %d\n", player1.avgScore);
+
+    printf("\nPlayer 2's performance:\n");
+    for (int i = 0; i < 12; i++) {
+        printf("Ball %d: %d\n", i + 1, player2.ballScores[i]);
+    }
+    printf("Total score for Player 2: %d\n", player2.totalScore);
+    printf("Average score for Player 2: %d\n", player2.avgScore);
+}
+
+int main() {
+    Player player1, player2;
+
+    // Get Player 1's details
+    printf("Enter name for Player 1: ");
+    fgets(player1.playerName, sizeof(player1.playerName), stdin);
+    player1.playerName[strcspn(player1.playerName, "\n")] = '\0';  // Remove the newline character
+    printf("Enter details for Player 1:\n");
+    playGame(&player1);  // Call playGame with player1
+
+    // Get Player 2's details
+    printf("\nEnter name for Player 2: ");
+    fgets(player2.playerName, sizeof(player2.playerName), stdin);
+    player2.playerName[strcspn(player2.playerName, "\n")] = '\0';  // Remove the newline character
+    printf("Enter details for Player 2:\n");
+    playGame(&player2);  // Call playGame with player2
+
+    // Display match results
+    displayMatchScoreboard(player1, player2);
+
+    // Find and display the winner
+    findWinner(player1, player2);
+
+    return 0;
+}
