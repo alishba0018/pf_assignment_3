@@ -1,0 +1,25 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int validateEmail(char* email){
+    char *at_pos = strchr(email, '@');
+    char *dot_pos = strchr(email, '.');
+    if (at_pos != NULL && dot_pos != NULL && at_pos < dot_pos && at_pos != email && dot_pos != email + strlen(email) - 1) {
+        printf("email is valid!");
+        return 1;
+    }
+    else{
+        printf("email is invalid");
+        return 0;
+    }
+}
+
+int main(){
+   char *email=(char *)malloc(100*sizeof(char));
+   printf("enter the email:");
+   fgets(email,100,stdin);
+   validateEmail(email);
+   free(email);
+   return 0;
+}
