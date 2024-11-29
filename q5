@@ -1,0 +1,54 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int main() {
+    int numSpecies, numSupplies;
+    int i, j;
+    printf("Enter the number of species: ");
+    scanf("%d", &numSpecies);
+    printf("Enter the number of supplies per species: ");
+    scanf("%d", &numSupplies);
+    char ***speciesSupplies = (char ***)malloc(numSpecies * sizeof(char **));
+    if (speciesSupplies == NULL) {
+        printf("Memory allocation failed for species.\n");
+        return 1;
+    }
+    for (i = 0; i < numSpecies; i++) {
+        speciesSupplies[i] = (char **)malloc(numSupplies * sizeof(char *));
+        if (speciesSupplies[i] == NULL) {
+            printf("Memory allocation failed for species %d.\n", i + 1);
+            return 1;
+        }
+        for (j = 0; j < numSupplies; j++) {
+            speciesSupplies[i][j] = (char *)malloc(50 * sizeof(char));
+            if (speciesSupplies[i][j] == NULL) {
+                printf("Memory allocation failed for supply %d of species %d.\n", j + 1, i + 1);
+                return 1;
+            }
+        }
+    }
+    for (i = 0; i < numSpecies; i++) {
+        printf("\nEnter supplies for species %d:\n", i + 1);
+        for (j = 0; j < numSupplies; j++) {
+            printf("Enter supply %d: ", j + 1);
+            fgets(speciesSupplies[i][j], 50, stdin);
+        }
+    }
+    printf("\nInventory for Pets in Heart:\n");
+    for (i = 0; i < numSpecies; i++) {
+        printf("\nSpecies %d:\n", i + 1);
+        for (j = 0; j < numSupplies; j++) {
+            printf("Supply %d: %s\n", j + 1, speciesSupplies[i][j]);
+        }
+    }
+    for (i = 0; i < numSpecies; i++) {
+        for (j = 0; j < numSupplies; j++) {
+            free(speciesSupplies[i][j]);
+        }
+        free(speciesSupplies[i]);
+    }
+    free(speciesSupplies);
+    return 0;
+}
+
