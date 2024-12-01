@@ -1,0 +1,99 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct {
+    char title[50];
+    float rating;
+    int runtime;  // in minutes
+    char encodingFormat[20];
+} ContentMetadata;
+
+void initializeEngagementMatrix(double ***engagementMatrix, int numUsers, int numCategories) {
+    *engagementMatrix = (double**) malloc(numUsers * sizeof(double*));
+    for (int i = 0; i < numUsers; i++) {
+        (*engagementMatrix)[i] = (double*) malloc(numCategories * sizeof(double));
+        for (int j = 0; j < numCategories; j++) {
+            (*engagementMatrix)[i][j] = 0.0;
+        }
+    }
+}
+
+void initializeDeviceMatrix(int ***deviceMatrix, int numUsers, int numDevices) {
+    *deviceMatrix = (int**) malloc(numUsers * sizeof(int*));
+    for (int i = 0; i < numUsers; i++) {
+        (*deviceMatrix)[i] = (int*) malloc(numDevices * sizeof(int));
+        for (int j = 0; j < numDevices; j++) {
+            (*deviceMatrix)[i][j] = 0;  
+        }
+    }
+}
+
+void initializeContentMetadataMatrix(ContentMetadata ***contentMetadataMatrix, int numCategories, int numContents) {
+    *contentMetadataMatrix = (ContentMetadata**) malloc(numCategories * sizeof(ContentMetadata*));
+    for (int i = 0; i < numCategories; i++) {
+        (*contentMetadataMatrix)[i] = (ContentMetadata*) malloc(numContents * sizeof(ContentMetadata));
+        for (int j = 0; j < numContents; j++) {
+            strcpy((*contentMetadataMatrix)[i][j].title, "Unknown");
+            (*contentMetadataMatrix)[i][j].rating = 0.0;
+            (*contentMetadataMatrix)[i][j].runtime = 0;
+            strcpy((*contentMetadataMatrix)[i][j].encodingFormat, "Unknown");
+        }
+    }
+}
+
+void updateEngagementMatrix(double **engagementMatrix, int userIndex, int categoryIndex, double newScore) {
+    engagementMatrix[userIndex][categoryIndex] = newScore;
+}
+
+void updateDevicePreferences(int **deviceMatrix, int userIndex, int deviceIndex, int newPreference) {
+    deviceMatrix[userIndex][deviceIndex] = newPreference;
+}
+
+void updateContentMetadata(ContentMetadata **contentMetadataMatrix, int categoryIndex, int contentIndex, const char *title, float rating, int runtime, const char *encodingFormat) {
+    strcpy(contentMetadataMatrix[categoryIndex][contentIndex].title, title);
+    contentMetadataMatrix[categoryIndex][contentIndex].rating = rating;
+    contentMetadataMatrix[categoryIndex][contentIndex].runtime = runtime;
+    strcpy(contentMetadataMatrix[categoryIndex][contentIndex].encodingFormat, encodingFormat);
+}
+
+void freeMemory(double **engagementMatrix, int **deviceMatrix, ContentMetadata **contentMetadataMatrix, int numUsers, int numCategories, int numDevices, int numContents) {
+    for (int i = 0; i < numUsers; i++) {
+        free(engagementMatrix[i]);
+        free(deviceMatrix[i]);
+    }
+    free(engagementMatrix);
+    free(deviceMatrix);
+
+    for (int i = 0; i < numCategories; i++) {
+        free(contentMetadataMatrix[i]);
+    }
+    free(contentMetadataMatrix);
+}
+
+int main() {
+    
+    int numUsers = 3;
+    int numCategories = 3;
+    int numDevices = 2;
+    int numContents = 3;
+    double **engagementMatrix;
+    int **deviceMatrix;
+    ContentMetadata **contentMetadataMatrix;
+    initializeEngagementMatrix(&engagementMatrix, numUsers, numCategories);
+    initializeDeviceMatrix(&deviceMatrix, numUsers, numDevices);
+    initializeContentMetadataMatrix(&contentMetadataMatrix, numCategories, numContents);
+    updateEngagementMatrix(engagementMatrix, 0, 1, 4.5);
+    updateDevicePreferences(deviceMatrix, 0, 0, 1080);
+    updateContentMetadata(contentMetadataMatrix, 0, 1, "Action Movie 2", 4.2, 120, "H.264");
+    printf("User 0 Engagement with Drama: %.2f\n", engagementMatrix[0][1]);
+    printf("User 0 Device Preference for Smart TV: %dp\n", deviceMatrix[0][0]);
+    printf("Content Metadata for Action Movie 2: %s, Rating: %.1f, Runtime: %d mins, Format: %s\n", 
+        contentMetadataMatrix[0][1].title, 
+        contentMetadataMatrix[0][1].rating, 
+        contentMetadataMatrix[0][1].runtime, 
+        contentMetadataMatrix[0][1].encodingFormat);
+    freeMemory(engagementMatrix, deviceMatrix, contentMetadataMatrix, numUsers, numCategories, numDevices, numContents);
+
+    return 0;
+}
